@@ -2,8 +2,6 @@ package models
 
 import "time"
 
-// User representa a un empleado de LC Consultores (Contador, Técnico, Admin)
-
 type User struct {
 	ID                 uint      `json:"id" gorm:"primaryKey"`
 	FirstName          string    `json:"firstName" gorm:"not null"`

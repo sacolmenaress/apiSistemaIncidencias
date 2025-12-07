@@ -1,17 +1,14 @@
-// controllers/incidencia.controller.go
 package controllers
 
 import (
-	"net/http" // Para manejar IDs
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sacolmenaress/apiTesisISUM/database"
 	"github.com/sacolmenaress/apiTesisISUM/models"
 )
 
-// Responde a: POST /api/v1/incidencias
 func CreateIncidencia(c *gin.Context) {
-	// Usamos la misma estructura que enviaste desde el modal de React
 	var body struct {
 		Title    string `json:"title" binding:"required"`
 		Solution string `json:"solution" binding:"required"`
@@ -41,12 +38,9 @@ func CreateIncidencia(c *gin.Context) {
 	c.JSON(http.StatusCreated, incidencia)
 }
 
-// Responde a: GET /api/v1/incidencias
 func GetIncidencias(c *gin.Context) {
 	var incidencias []models.Incidencia
 
-	// Aquí puedes agregar lógica para filtrar por rol si solo el admin debe ver todas
-	// Pero por simplicidad, cargamos todas las incidencias por defecto.
 	result := database.DB.Find(&incidencias)
 
 	if result.Error != nil {
@@ -57,7 +51,7 @@ func GetIncidencias(c *gin.Context) {
 	c.JSON(http.StatusOK, incidencias)
 }
 
-// Responde a: PUT /api/v1/incidencias/:id
+// PUT /api/v1/incidencias/:id
 func UpdateIncidencia(c *gin.Context) {
 	id := c.Param("id")
 	var incidencia models.Incidencia
@@ -98,7 +92,7 @@ func UpdateIncidencia(c *gin.Context) {
 	c.JSON(http.StatusOK, incidencia)
 }
 
-// Responde a: GET /api/v1/incidencias/:id
+// GET /api/v1/incidencias/:id
 func GetIncidencia(c *gin.Context) {
 	id := c.Param("id")
 	var incidencia models.Incidencia
@@ -111,11 +105,10 @@ func GetIncidencia(c *gin.Context) {
 	c.JSON(http.StatusOK, incidencia)
 }
 
-// Responde a: DELETE /api/v1/incidencias/:id
+// DELETE /api/v1/incidencias/:id
 func DeleteIncidencia(c *gin.Context) {
 	id := c.Param("id")
 
-	// Usamos Delete para hacer un "soft delete" (la incidencia aún existe en la DB)
 	result := database.DB.Delete(&models.Incidencia{}, id)
 
 	if result.Error != nil {
@@ -126,19 +119,15 @@ func DeleteIncidencia(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Incidencia eliminada con éxito (soft delete)."})
 }
 
-// incidencia.controller.go (Agrega esta nueva función)
-// Responde a: GET /api/v1/incidencias/public
+// GET /api/v1/incidencias/public
 func GetPublicIncidencias(c *gin.Context) {
 	var incidencias []models.Incidencia
 
-	// Carga SÓLO las incidencias marcadas como públicas (is_public = true)
 	result := database.DB.Where("is_public = ?", true).Find(&incidencias)
 
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al cargar las incidencias públicas de la base de datos."})
 		return
 	}
-
-	// Devuelve 200 OK con el array de incidencias (vacío o con contenido)
 	c.JSON(http.StatusOK, incidencias)
 }
